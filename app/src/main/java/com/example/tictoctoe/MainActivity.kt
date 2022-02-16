@@ -6,336 +6,155 @@ import android.os.Bundle
 import android.view.View
 import android.widget.Button
 import android.widget.Toast
+import androidx.appcompat.app.AlertDialog
 import com.example.tictoctoe.databinding.ActivityMainBinding
 import java.util.*
 import kotlin.collections.ArrayList
 
 class MainActivity : AppCompatActivity() {
 
-    enum class Turn()
-    {
-        turnX,
-        turnO
+    enum class Turn() {
+        NOUGHT,
+        CROSS
     }
 
-    private var firtTurn = Turn.turnX
-    private var currentTurn = Turn.turnO
+    private var firtTurn = Turn.NOUGHT
+    private var currentTurn = Turn.CROSS
+    private var boardList = mutableListOf<Button>()
+    private var crossesScore = 0
+    private var noughtsScore = 0
 
-   lateinit var binding: ActivityMainBinding
+    lateinit var binding: ActivityMainBinding
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         binding = ActivityMainBinding.inflate(layoutInflater)
-        val view = binding.root
-        setContentView(view)
+        setContentView(binding.root)
+        initBoard()
+    }
+
+    private fun initBoard() {
+        boardList.add(binding.button1)
+        boardList.add(binding.button2)
+        boardList.add(binding.button3)
+        boardList.add(binding.button4)
+        boardList.add(binding.button5)
+        boardList.add(binding.button6)
+        boardList.add(binding.button7)
+        boardList.add(binding.button8)
+        boardList.add(binding.button9)
+    }
+
+    fun boardTapped(view: View) {
+        if (view !is Button)
+            return
+        addToBoard(view)
+
+        if (checkForVictory("X")) {
+            noughtsScore ++
+            result("Player X Win!")
+
+        }
+        if (checkForVictory("O")) {
+            crossesScore ++
+            result("Player O Win!")
+
+        }
+        setTurnLabel()
+        if (fullBoard()) {
+            result("Draw")
+        }
+    }
+
+    private fun checkForVictory(s: String): Boolean {
+
+        //Horizontal victory
+        if (match(binding.button1, s) && match(binding.button2, s) && match(binding.button3, s))
+            return true
+        if (match(binding.button4, s) && match(binding.button5, s) && match(binding.button6, s))
+            return true
+        if (match(binding.button7, s) && match(binding.button8, s) && match(binding.button9, s))
+            return true
+
+        //Vertical victory
+        if (match(binding.button1, s) && match(binding.button4, s) && match(binding.button7, s))
+            return true
+        if (match(binding.button2, s) && match(binding.button5, s) && match(binding.button8, s))
+            return true
+        if (match(binding.button3, s) && match(binding.button6, s) && match(binding.button9, s))
+            return true
+
+        //Diagonal victory
+        if (match(binding.button1, s) && match(binding.button5, s) && match(binding.button9, s))
+            return true
+        if (match(binding.button3, s) && match(binding.button5, s) && match(binding.button7, s))
+            return true
+
+        return false
+    }
+
+
+    private fun addToBoard(button: Button) {
+        if (button.text != "")
+            return
+        if (currentTurn == Turn.NOUGHT) {
+            button.text = "O"
+            currentTurn = Turn.CROSS
+        } else if (currentTurn == Turn.CROSS) {
+            button.text = "X"
+            currentTurn = Turn.NOUGHT
+        }
+
+        setTurnLabel()
 
     }
 
-    fun boardTapped(view: View){
-        if (view !is Button)
-            return
-        else{
-            if (view.text != "")
-                return
-            if (currentTurn == Turn.turnO){
-                view.text = "O"
-                currentTurn = Turn.turnX
-            }
-            else if (currentTurn == Turn.turnX){
-                view.text = "X"
-                currentTurn = Turn.turnO
-            }
+    private fun match(button: Button, symbol: String): Boolean =  button.text == symbol
+    private fun result(title: String) {
+        val massage = "\nPlayer X: $noughtsScore\n\nPlayer O: $crossesScore"
+        AlertDialog.Builder(this)
+            .setTitle(title)
+            .setMessage(massage)
+            .setPositiveButton("Reset") { _, _ -> resetBoard() }
+            .setCancelable(false)
+            .show()
 
-            setTurnLabel()
-        }
     }
 
     private fun setTurnLabel() {
-        var turn = ""
+        var turnText = ""
 
-        if (currentTurn == Turn.turnX)
-            turn = " Turn Player X"
-        else if (currentTurn == Turn.turnO)
-            turn = "Turn Player O"
+        if (currentTurn == Turn.CROSS)
+            turnText = " Turn Player X"
+        else if (currentTurn == Turn.NOUGHT)
+            turnText = "Turn Player O"
 
-        binding.textView3Winner.text = turn
+        binding.textView3Winner.text = turnText
     }
 
-    fun reset(){
-        binding.button2.text = ""
-        binding.button3.text = ""
-        binding.button4.text = ""
-        binding.button5.text = ""
-        binding.button6.text = ""
-        binding.button7.text = ""
-        binding.button8.text = ""
-        binding.button9.text = ""
-        binding.button10.text = ""
-
-        binding.textView3Winner.text = "Click to start"
-    }
-
-    fun stopTouch()
-    {
-        binding.button10.isEnabled = false
-        binding.button2.isEnabled = false
-        binding.button3.isEnabled = false
-        binding.button4.isEnabled = false
-        binding.button5.isEnabled = false
-        binding.button6.isEnabled = false
-        binding.button7.isEnabled = false
-        binding.button8.isEnabled = false
-        binding.button9.isEnabled = false
-    }
-
-    var Player1 = ArrayList<Int>()
-    var Player2 = ArrayList<Int>()
-    var ActivePlayer = 1
-    var setPlayer = 1
-
-
-    fun restartGame(view:View)
-    {
-        binding.button10.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button2.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button3.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button4.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button5.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button6.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button7.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button8.setBackgroundResource(android.R.drawable.btn_default)
-        binding.button9.setBackgroundResource(android.R.drawable.btn_default)
-
-        binding.button10.isEnabled = false
-        binding.button2.isEnabled = false
-        binding.button3.isEnabled = false
-        binding.button4.isEnabled = false
-        binding.button5.isEnabled = false
-        binding.button6.isEnabled = false
-        binding.button7.isEnabled = false
-        binding.button8.isEnabled = false
-        binding.button9.isEnabled = false
-
-        Player1.clear()
-        Player2.clear()
-        ActivePlayer = 1
-
-        binding.button10.isEnabled = true
-        binding.button2.isEnabled = true
-        binding.button3.isEnabled = true
-        binding.button4.isEnabled = true
-        binding.button5.isEnabled = true
-        binding.button6.isEnabled = true
-        binding.button7.isEnabled = true
-        binding.button8.isEnabled = true
-        binding.button9.isEnabled = true
-
-        setPlayer = 1
-
-    }
-
-    fun buttonClick(view: View)
-    {
-        val buSelected:Button = view as Button
-        var cellId = 0
-        when(buSelected.id)
-        {
-            R.id.button2 -> cellId = 1
-            R.id.button3 -> cellId = 2
-            R.id.button4 -> cellId = 3
-
-            R.id.button5 -> cellId = 4
-            R.id.button6 -> cellId = 5
-            R.id.button7 -> cellId = 6
-
-            R.id.button8 -> cellId = 7
-            R.id.button9 -> cellId = 8
-            R.id.button10 -> cellId = 9
-        }
-        PlayGame(cellId,buSelected)
-
-    }
-
-
-
-    fun PlayGame(cellId:Int,buSelected:Button)
-    {
-        if (ActivePlayer == 1)
-        {
-            buSelected.text = "X"
-            buSelected.setBackgroundColor(Color.GREEN)
-            Player1.add(cellId)
-            ActivePlayer = 2
-            if (setPlayer == 1)
-            {}
-            else
-            {
-                try {
-                    AutoPlay()
-                }catch (ex:Exception)
-                {
-                    Toast.makeText(this,"Game Over", Toast.LENGTH_SHORT).show()
-                }
-
+    private fun fullBoard(): Boolean {
+        for (button in boardList) {
+            if (button.text == "") {
+                return false
             }
         }
-        else
-        {
-            buSelected.text = "O"
-            buSelected.setBackgroundColor(Color.CYAN)
-            Player2.add(cellId)
-            ActivePlayer = 1
-        }
-        buSelected.isEnabled = false
-        CheckWinner()
+        return true
     }
 
-    fun CheckWinner()
-    {
-        var winner = -1
+    private fun resetBoard() {
+        for (button in boardList) {
 
-        //row1
-        if (Player1.contains(1) && Player1.contains(2) && Player1.contains(3))
-        {
-            winner = 1
+            button.text = ""
         }
-        if (Player2.contains(1) && Player2.contains(2) && Player2.contains(3))
-        {
-            winner = 2
-        }
+        if (firtTurn == Turn.NOUGHT)
+            firtTurn = Turn.CROSS
+        else if (firtTurn == Turn.CROSS)
+            firtTurn = Turn.NOUGHT
 
-        //row2
-        if (Player1.contains(4) && Player1.contains(5) && Player1.contains(6))
-        {
-            winner = 1
-        }
-        if (Player2.contains(4) && Player2.contains(5) && Player2.contains(6))
-        {
-            winner = 2
-        }
-
-        //row3
-        if (Player1.contains(7) && Player1.contains(8) && Player1.contains(9))
-        {
-            winner = 1
-        }
-        if (Player2.contains(7) && Player2.contains(8) && Player2.contains(9))
-        {
-            winner = 2
-        }
-
-        //col1
-        if (Player1.contains(1) && Player1.contains(4) && Player1.contains(7))
-        {
-            winner = 1
-        }
-        if (Player2.contains(1) && Player2.contains(4) && Player2.contains(7))
-        {
-            winner = 2
-        }
-
-        //col2
-        if (Player1.contains(2) && Player1.contains(5) && Player1.contains(8))
-        {
-            winner = 1
-        }
-        if (Player2.contains(2) && Player2.contains(5) && Player2.contains(8))
-        {
-            winner = 2
-        }
-
-        //col3
-        if (Player1.contains(3) && Player1.contains(6) && Player1.contains(9))
-        {
-            winner = 1
-        }
-        if (Player2.contains(3) && Player2.contains(6) && Player2.contains(9))
-        {
-            winner = 2
-        }
-
-        //cross1
-        if (Player1.contains(1) && Player1.contains(5) && Player1.contains(9))
-        {
-            winner = 1
-        }
-        if (Player2.contains(1) && Player2.contains(5) && Player2.contains(9))
-        {
-            winner = 2
-        }
-
-        //cross2
-        if (Player1.contains(3) && Player1.contains(5) && Player1.contains(7))
-        {
-            winner = 1
-        }
-        if (Player2.contains(3) && Player2.contains(5) && Player2.contains(7))
-        {
-            winner = 2
-        }
-
-        if (winner != -1)
-        {
-            if (winner == 1)
-            {
-                if(setPlayer == 1) {
-                    binding.textView3Winner.text = "Player 1 Wins!"
-                    stopTouch()
-                }
-                else
-                {
-                    Toast.makeText(this, "You Won!!", Toast.LENGTH_SHORT).show()
-                    stopTouch()
-                }
-            }
-            else
-            {
-                if (setPlayer == 1) {
-                    Toast.makeText(this, "Player 2 Wins!!", Toast.LENGTH_SHORT).show()
-                    stopTouch()
-                }
-                else
-                {
-                    Toast.makeText(this, "CPU Wins!!", Toast.LENGTH_SHORT).show()
-                    stopTouch()
-                }
-            }
-        }
+        currentTurn = firtTurn
     }
 
-
-    fun AutoPlay()
-    {
-        val emptyCells = ArrayList<Int>()
-        for (cellId in 1..9) {
-            if (Player1.contains(cellId) || Player2.contains(cellId))
-            {}
-            else
-            {
-                emptyCells.add(cellId)
-            }
-        }
-
-        val r = Random()
-        val randomIndex = r.nextInt(emptyCells.size-0)+0
-        val cellId = emptyCells[randomIndex]
-
-        val buSelect:Button?
-        when(cellId)
-        {
-            1 -> buSelect = binding.button2
-            2 -> buSelect = binding.button3
-            3 -> buSelect = binding.button4
-            4 -> buSelect = binding.button5
-            5 -> buSelect = binding.button6
-            6 -> buSelect = binding.button7
-            7 -> buSelect = binding.button8
-            8 -> buSelect = binding.button9
-            9 -> buSelect = binding.button10
-            else -> buSelect = binding.button2
-        }
-
-        PlayGame(cellId,buSelect)
-    }
 
 }
+
+
