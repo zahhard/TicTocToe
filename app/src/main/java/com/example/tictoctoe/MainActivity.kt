@@ -35,6 +35,8 @@ class MainActivity : AppCompatActivity() {
         for (button in boardList){
             button.setOnClickListener(:: boardTapped)
         }
+
+        binding.button.setOnClickListener { resetBoard() }
     }
 
     private fun initBoard() {
@@ -54,7 +56,7 @@ class MainActivity : AppCompatActivity() {
             return
         addToBoard(view)
 
-       /* if (checkForVictory("X")) {
+        if (checkForVictory("X")) {
             noughtsScore ++
             result("Player X Win!")
 
@@ -69,7 +71,7 @@ class MainActivity : AppCompatActivity() {
             result("Draw")
         }
 
-        */
+
     }
 
 
@@ -85,9 +87,7 @@ class MainActivity : AppCompatActivity() {
             button.text = CROSS
             currentTurn = Turn.NOUGHT
         }
-
         setTurnLabel()
-
     }
 
     companion object{
@@ -95,7 +95,6 @@ class MainActivity : AppCompatActivity() {
         const val CROSS = "X"
 
     }
-
 
     private fun setTurnLabel() {
         var turnText = ""
@@ -107,9 +106,6 @@ class MainActivity : AppCompatActivity() {
 
         binding.textView3Winner.text = turnText
     }
-/*
-
-
 
     private fun checkForVictory(s: String): Boolean {
 
@@ -138,11 +134,6 @@ class MainActivity : AppCompatActivity() {
         return false
     }
 
-
- */
-
-
-    /*
     private fun match(button: Button, symbol: String): Boolean =  button.text == symbol
     private fun result(title: String) {
         val massage = "\nPlayer X: $noughtsScore\n\nPlayer O: $crossesScore"
@@ -152,23 +143,18 @@ class MainActivity : AppCompatActivity() {
             .setPositiveButton("Reset") { _, _ -> resetBoard() }
             .setCancelable(false)
             .show()
-
     }
 
-     */
 
-/*
     private fun fullBoard(): Boolean {
         for (button in boardList) {
             if (button.text == "") {
                 return false
             }
         }
-
-
         return true
     }
-/*
+
     private fun resetBoard() {
         for (button in boardList) {
 
@@ -181,12 +167,6 @@ class MainActivity : AppCompatActivity() {
 
         currentTurn = firtTurn
     }
-
- */
-
- */
-
-
 }
 
 
