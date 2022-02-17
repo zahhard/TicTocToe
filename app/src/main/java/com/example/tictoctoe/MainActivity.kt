@@ -31,6 +31,10 @@ class MainActivity : AppCompatActivity() {
         binding = ActivityMainBinding.inflate(layoutInflater)
         setContentView(binding.root)
         initBoard()
+
+        for (button in boardList){
+            button.setOnClickListener(:: boardTapped)
+        }
     }
 
     private fun initBoard() {
@@ -50,7 +54,7 @@ class MainActivity : AppCompatActivity() {
             return
         addToBoard(view)
 
-        if (checkForVictory("X")) {
+       /* if (checkForVictory("X")) {
             noughtsScore ++
             result("Player X Win!")
 
@@ -64,7 +68,48 @@ class MainActivity : AppCompatActivity() {
         if (fullBoard()) {
             result("Draw")
         }
+
+        */
     }
+
+
+    private fun addToBoard(button: Button) {
+        if (button.text != "")
+            return
+
+        if (currentTurn == Turn.NOUGHT) {
+            button.text = NOUGHT
+            currentTurn = Turn.CROSS
+        }
+        else if (currentTurn == Turn.CROSS) {
+            button.text = CROSS
+            currentTurn = Turn.NOUGHT
+        }
+
+        setTurnLabel()
+
+    }
+
+    companion object{
+        const val NOUGHT = "O"
+        const val CROSS = "X"
+
+    }
+
+
+    private fun setTurnLabel() {
+        var turnText = ""
+
+        if (currentTurn == Turn.CROSS)
+            turnText = " Turn Player $CROSS"
+        else if (currentTurn == Turn.NOUGHT)
+            turnText = "Turn Player $NOUGHT"
+
+        binding.textView3Winner.text = turnText
+    }
+/*
+
+
 
     private fun checkForVictory(s: String): Boolean {
 
@@ -94,21 +139,10 @@ class MainActivity : AppCompatActivity() {
     }
 
 
-    private fun addToBoard(button: Button) {
-        if (button.text != "")
-            return
-        if (currentTurn == Turn.NOUGHT) {
-            button.text = "O"
-            currentTurn = Turn.CROSS
-        } else if (currentTurn == Turn.CROSS) {
-            button.text = "X"
-            currentTurn = Turn.NOUGHT
-        }
+ */
 
-        setTurnLabel()
 
-    }
-
+    /*
     private fun match(button: Button, symbol: String): Boolean =  button.text == symbol
     private fun result(title: String) {
         val massage = "\nPlayer X: $noughtsScore\n\nPlayer O: $crossesScore"
@@ -121,26 +155,20 @@ class MainActivity : AppCompatActivity() {
 
     }
 
-    private fun setTurnLabel() {
-        var turnText = ""
+     */
 
-        if (currentTurn == Turn.CROSS)
-            turnText = " Turn Player X"
-        else if (currentTurn == Turn.NOUGHT)
-            turnText = "Turn Player O"
-
-        binding.textView3Winner.text = turnText
-    }
-
+/*
     private fun fullBoard(): Boolean {
         for (button in boardList) {
             if (button.text == "") {
                 return false
             }
         }
+
+
         return true
     }
-
+/*
     private fun resetBoard() {
         for (button in boardList) {
 
@@ -153,6 +181,10 @@ class MainActivity : AppCompatActivity() {
 
         currentTurn = firtTurn
     }
+
+ */
+
+ */
 
 
 }
