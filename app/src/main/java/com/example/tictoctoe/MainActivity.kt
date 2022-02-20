@@ -36,7 +36,7 @@ class MainActivity : AppCompatActivity() {
             button.setOnClickListener(:: boardTapped)
         }
 
-        binding.button.setOnClickListener { resetBoard() }
+        binding.button.setOnClickListener { reset() }
     }
 
     private fun initBoard() {
@@ -135,6 +135,7 @@ class MainActivity : AppCompatActivity() {
     }
 
     private fun match(button: Button, symbol: String): Boolean =  button.text == symbol
+
     private fun result(title: String) {
         val massage = "\nPlayer X: $noughtsScore\n\nPlayer O: $crossesScore"
         AlertDialog.Builder(this)
@@ -167,6 +168,21 @@ class MainActivity : AppCompatActivity() {
 
         currentTurn = firtTurn
     }
+
+
+    private fun reset() {
+        for (button in boardList) {
+
+            button.text = ""
+        }
+
+        binding.textView3Winner.setText("Click to start!")
+        crossesScore = 0
+        noughtsScore = 0
+
+
+    }
+
 }
 
 
